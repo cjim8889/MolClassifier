@@ -56,7 +56,6 @@ if __name__ == "__main__":
                 if idx % 10 == 0:
                     ll = (loss_step / 10.).item()
                     wandb.log({"epoch": epoch, "BCE": ll}, step=step)
-                    print(ll)
                     loss_step = 0
             
             wandb.log({"BCE/Train": (loss_ep_train / len(train_loader)).item()}, step=epoch)
@@ -72,11 +71,22 @@ if __name__ == "__main__":
                     validity = validity.to(device)
 
                     output = net(atom_types.long(), pos, mask=mask)
+
+                    # binary_output = torch.zeros_like(output)
+                    # binary_output[output > 0.5] = 1.
+
                     loss = metric(output.squeeze(), validity)
                     
                     loss_test += loss
 
                 loss_test /= len(test_loader)               
-                wandb.log({"BCE/Test": loss_test.item()}, step=epoch)
+                wandb.log({"BCELoss/Test": loss_test.item()}, step=epoch)
 
-
+            if epoch % 10 == 0:
+                torch.save({
+                            'epoch': epoch,
+                            'model_state_dict': net.state_dict(),
+                            'optimizer_state_dict': optimiser.state_dict(),
+                            }, f"model_checkpoint_{run.id}_{epoch}.pt")
+                            
+                wandb.save(f"model_checkpoint_{run.id}_{epoch}.pt")
