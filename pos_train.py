@@ -50,8 +50,8 @@ if __name__ == "__main__":
                 loss.backward()
                 optimiser.step()
 
-                loss_step += loss
-                loss_ep_train += loss
+                loss_step += loss.detach()
+                loss_ep_train += loss.detach()
 
                 step += 1
                 if idx % 10 == 0:
