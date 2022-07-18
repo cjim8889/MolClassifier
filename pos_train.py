@@ -103,14 +103,14 @@ if __name__ == "__main__":
                 recall /= len(test_loader)
 
 
-
+                print(f"F1 {f1}, Acc {acc}, Prec {prec}, Recall {recall}")
                 wandb.log({
-                    "BCELoss/Test": loss_test.item(),
-                    "Accuracy/Test": acc,
-                    "F1/Test": f1,
-                    "Precision/Test": prec,
-                    "Recall/Test": recall
-                }, step=epoch)
+                    "BCELoss": loss_test.item(),
+                    "Accuracy": acc,
+                    "F1": f1,
+                    "Precision": prec,
+                    "Recall": recall
+                })
 
             if epoch % 10 == 0:
                 torch.save({
