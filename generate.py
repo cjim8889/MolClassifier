@@ -36,50 +36,41 @@ if __name__ == "__main__":
         invalid_pos = torch.randn_like(pos)
         invalid_validity = torch.zeros(pos.shape[0])
 
-        pos_list.append(invalid_pos[:200])
-        mask_list.append(mask[:200])
-        validity_list.append(invalid_validity[:200])
+        pos_list.append(invalid_pos[:50])
+        mask_list.append(mask[:50])
+        validity_list.append(invalid_validity[:50])
 
         # Add normal noise to the pos
 
         invalid_addition = torch.randn_like(pos)
         invalid_pos = pos + invalid_addition * mask.unsqueeze(2)
         
-        pos_list.append(invalid_pos[:200])
-        mask_list.append(mask[:200])
-        validity_list.append(invalid_validity[:200])
+        pos_list.append(invalid_pos[:50])
+        mask_list.append(mask[:50])
+        validity_list.append(invalid_validity[:50])
 
         # Create discontinuity
 
         invalid_addition = torch.randint_like(pos, low=0, high=2)
         invalid_pos = pos + invalid_addition * mask.unsqueeze(2)
 
-        pos_list.append(invalid_pos[:200])
-        mask_list.append(mask[:200])
-        validity_list.append(invalid_validity[:200])
+        pos_list.append(invalid_pos[:100])
+        mask_list.append(mask[:100])
+        validity_list.append(invalid_validity[:100])
 
-        # Randomly changing position of an atom within a molecule
-
-        random_ratio = torch.rand(pos.shape[0])
-        random_int = torch.floor(random_ratio * mask.sum(dim=-1)).long()
+        # Perturn the position of an atom within a molecule
 
         invalid_pos = pos.clone()
-        invalid_pos[torch.arange(pos.shape[0]), random_int] += torch.randn(pos.shape[0], 3) * 2
+        for degree in range(8):
+            random_ratio = torch.rand(pos.shape[0])
+            random_int = torch.floor(random_ratio * mask.sum(dim=-1)).long()
 
-        pos_list.append(invalid_pos[:200].clone())
-        mask_list.append(mask[:200])
-        validity_list.append(invalid_validity[:200])
+            invalid_pos[torch.arange(pos.shape[0]), random_int] += torch.randn(pos.shape[0], 3) * 2
 
-        # Perturb the second atom in the molecule
+            pos_list.append(invalid_pos[:100].clone())
+            mask_list.append(mask[:100])
+            validity_list.append(invalid_validity[:100])
 
-        random_ratio = torch.rand(pos.shape[0])
-        random_int = torch.floor(random_ratio * mask.sum(dim=-1)).long()
-
-        invalid_pos[torch.arange(pos.shape[0]), random_int] += torch.randn(pos.shape[0], 3) * 2
-
-        pos_list.append(invalid_pos[:200].clone())
-        mask_list.append(mask[:200])
-        validity_list.append(invalid_validity[:200])
 
 
     
