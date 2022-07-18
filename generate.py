@@ -42,21 +42,45 @@ if __name__ == "__main__":
 
         # Add normal noise to the pos
 
-        invalid_addition = torch.randn_like(pos) * 2
+        invalid_addition = torch.randn_like(pos)
         invalid_pos = pos + invalid_addition * mask.unsqueeze(2)
         
-        pos_list.append(invalid_pos[:500])
-        mask_list.append(mask[:500])
-        validity_list.append(invalid_validity[:500])
+        pos_list.append(invalid_pos[:200])
+        mask_list.append(mask[:200])
+        validity_list.append(invalid_validity[:200])
 
         # Create discontinuity
 
         invalid_addition = torch.randint_like(pos, low=0, high=2)
         invalid_pos = pos + invalid_addition * mask.unsqueeze(2)
 
-        pos_list.append(invalid_pos[:300])
-        mask_list.append(mask[:300])
-        validity_list.append(invalid_validity[:300])
+        pos_list.append(invalid_pos[:200])
+        mask_list.append(mask[:200])
+        validity_list.append(invalid_validity[:200])
+
+        # Randomly changing position of an atom within a molecule
+
+        random_ratio = torch.rand(pos.shape[0])
+        random_int = torch.floor(random_ratio * mask.sum(dim=-1)).long()
+
+        invalid_pos = pos.clone()
+        invalid_pos[torch.arange(pos.shape[0]), random_int] += torch.randn(pos.shape[0], 3) * 2
+
+        pos_list.append(invalid_pos[:200].clone())
+        mask_list.append(mask[:200])
+        validity_list.append(invalid_validity[:200])
+
+        # Perturb the second atom in the molecule
+
+        random_ratio = torch.rand(pos.shape[0])
+        random_int = torch.floor(random_ratio * mask.sum(dim=-1)).long()
+
+        invalid_pos[torch.arange(pos.shape[0]), random_int] += torch.randn(pos.shape[0], 3) * 2
+
+        pos_list.append(invalid_pos[:200].clone())
+        mask_list.append(mask[:200])
+        validity_list.append(invalid_validity[:200])
+
 
     
     final_pos = torch.cat(pos_list, dim=0)
