@@ -70,14 +70,14 @@ if __name__ == "__main__":
                 prec = 0
                 recall = 0
                 for idx, batch in enumerate(test_loader):
-                    atom_types, pos, mask, validity = batch
+                    pos, mask, validity = batch
 
-                    atom_types = atom_types.to(device)
+                    # atom_types = atom_types.to(device)
                     pos = pos.to(device)
                     mask = mask.to(device)
                     validity = validity.to(device)
 
-                    output = net(atom_types.long(), pos, mask=mask)
+                    output = net(pos, mask=mask)
 
                     loss = metric(output.squeeze(), validity)
                     
